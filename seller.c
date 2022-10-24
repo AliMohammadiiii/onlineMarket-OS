@@ -8,6 +8,8 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
+#define TCPPORT 8081
+#define BROADCASTPORT 5000
 
 int setupServer(int port) {
     struct sockaddr_in address;
@@ -47,7 +49,7 @@ int main(int argc, char const *argv[]) {
     char buffer[1024] = {0};
     fd_set master_set, working_set;
        
-    server_fd = setupServer(8022);
+    server_fd = setupServer(TCPPORT);
     
     
 
@@ -61,7 +63,7 @@ int main(int argc, char const *argv[]) {
     setsockopt(broadcast_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 
     bc_address.sin_family = AF_INET; 
-    bc_address.sin_port = htons(2280); 
+    bc_address.sin_port = htons(BROADCASTPORT); 
     bc_address.sin_addr.s_addr = inet_addr("192.168.1.255");
 
     bind(broadcast_fd, (struct sockaddr *)&bc_address, sizeof(bc_address));
@@ -87,7 +89,7 @@ int main(int argc, char const *argv[]) {
 
         for (int i = 0; i <= max_sd; i++) {
             if (FD_ISSET(i, &working_set)) {
-                
+                printf("fd id: %d\n", i);
                 if (i == server_fd) {  // new clinet
                     new_socket = acceptClient(server_fd);
                     FD_SET(new_socket, &master_set);
