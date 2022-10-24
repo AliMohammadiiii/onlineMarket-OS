@@ -10,7 +10,7 @@
 #include <sys/ioctl.h>
 #include <stdio.h>
 
-#define TCPPORT 8081
+#define TCPPORT 8082
 #define BROADCASTPORT 5000
 
 
@@ -41,13 +41,15 @@ int main(int argc, char const *argv[]) {
     int server_fd, new_socket, max_sd;
     fd_set master_set, working_set;
 
-
+    int broadcastPort;
+    printf("tell me what seller you want to see: ");
+    scanf("%d", &broadcastPort);
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
     setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
     setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
     bc_address.sin_family = AF_INET; 
-    bc_address.sin_port = htons(BROADCASTPORT); 
+    bc_address.sin_port = htons(broadcastPort); 
     bc_address.sin_addr.s_addr = inet_addr("192.168.1.255");
     bind(sock, (struct sockaddr *)&bc_address, sizeof(bc_address));
 
@@ -68,8 +70,14 @@ int main(int argc, char const *argv[]) {
                 
                 if (i == 0) {  // new clinet
                     read(0,buffer,sizeof(buffer));
+                    // printf("bad");
+                    //int tcpPort = atoi(buffer);
+                    int tcpPort ;
+                    sscanf(buffer, "%d", &tcpPort);
+                    // int tcpPort = TCPPORT;
+                    // scanf("#d", tcpPort);
                     printf("type: %s", buffer);
-                    int fd = connectServer(TCPPORT);
+                    int fd = connectServer(tcpPort);
                     read(0, buffer, 1024);
                     send(fd, buffer, strlen(buffer), 0);
                     memset(buffer, 0, 1024);

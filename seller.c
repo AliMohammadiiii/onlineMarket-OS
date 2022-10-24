@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
-#define TCPPORT 8081
+#define TCPPORT 8082
 #define BROADCASTPORT 5000
 
 int setupServer(int port) {
@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
     server_fd = setupServer(TCPPORT);
     
     
-
+    int broadcastPort = atoi(argv[1]);
 
     int broadcast = 1, opt = 1;
     struct sockaddr_in bc_address;
@@ -63,7 +63,7 @@ int main(int argc, char const *argv[]) {
     setsockopt(broadcast_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 
     bc_address.sin_family = AF_INET; 
-    bc_address.sin_port = htons(BROADCASTPORT); 
+    bc_address.sin_port = htons(broadcastPort); 
     bc_address.sin_addr.s_addr = inet_addr("192.168.1.255");
 
     bind(broadcast_fd, (struct sockaddr *)&bc_address, sizeof(bc_address));
